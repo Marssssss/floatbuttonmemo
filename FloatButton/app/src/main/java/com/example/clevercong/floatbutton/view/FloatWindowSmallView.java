@@ -86,9 +86,10 @@ public class FloatWindowSmallView extends LinearLayout {
         viewHeight = view.getLayoutParams().height;
         TextView percentView = (TextView) findViewById(R.id.percent);
         percentView.setText(MyWindowManager.getUsedPercentValue(context));
+        mHandler = new FloatWindowSmallViewHandler(context);
     }
 
-    private FloatWindowSmallViewHandler mHandler = new FloatWindowSmallViewHandler();
+    private FloatWindowSmallViewHandler mHandler;
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -102,12 +103,17 @@ public class FloatWindowSmallView extends LinearLayout {
                 xInScreen = event.getRawX();
                 yInScreen = event.getRawY() - getStatusBarHeight();
                 mLastTouchTime = System.currentTimeMillis();
+                // 添加长按事件，这种实现方式，只要达到500ms，长按事件就发送出去了（实现一）
+                Message longPressMsg = mHandler.obtainMessage(EVENT_LONG_PRESS);
+                mHandler.sendMessageDelayed(longPressMsg, LONG_PRESS_INTERVAL);
                 break;
             case MotionEvent.ACTION_MOVE:
                 xInScreen = event.getRawX();
                 yInScreen = event.getRawY() - getStatusBarHeight();
                 // 手指移动的时候更新小悬浮窗的位置
                 updateViewPosition();
+                // 只要一移动，就把长按事件remove掉（实现一）
+                mHandler.removeMessages(EVENT_LONG_PRESS);
                 break;
             case MotionEvent.ACTION_UP:
                 // 如果手指离开屏幕时，xDownInScreen和xInScreen相等，且yDownInScreen和yInScreen相等，则视为触发了单击事件。
@@ -115,16 +121,19 @@ public class FloatWindowSmallView extends LinearLayout {
                     if (System.currentTimeMillis() - mLastClickTime < DOUBLE_CLICK_INTERVAL) {
                         // 间隔小于500ms，添加双击事件，移除单击事件
                         mHandler.removeMessages(EVENT_CLICK);
+                        mHandler.removeMessages(EVENT_LONG_PRESS); // 实现一
                         Message dClickMsg = mHandler.obtainMessage(EVENT_DOUBLE_CLICK);
                         mHandler.sendMessage(dClickMsg);
                     } else if (System.currentTimeMillis() - mLastTouchTime < LONG_PRESS_INTERVAL) {
                         // 间隔大于500ms，添加单击事件
+                        mHandler.removeMessages(EVENT_LONG_PRESS); // 实现一
                         Message clickMsg = mHandler.obtainMessage(EVENT_CLICK);
                         mHandler.sendMessageDelayed(clickMsg, DOUBLE_CLICK_INTERVAL);
                     } else {
                         // 其余，添加长按时间；注意：受第一条if语句空值，移动位置的长按不发送长按事件
-                        Message clickMsg = mHandler.obtainMessage(EVENT_LONG_PRESS);
-                        mHandler.sendMessage(clickMsg);
+                        // 这种实现方式，是长按到天荒地老，只有松手，才会发送长按事件（实现二）
+//                        Message longPressMsg = mHandler.obtainMessage(EVENT_LONG_PRESS);
+//                        mHandler.sendMessage(longPressMsg);
                     }
                     mLastClickTime = System.currentTimeMillis();
                 }
@@ -152,14 +161,6 @@ public class FloatWindowSmallView extends LinearLayout {
         mParams.x = (int) (xInScreen - xInView);
         mParams.y = (int) (yInScreen - yInView);
         windowManager.updateViewLayout(this, mParams);
-    }
-
-    /**
-     * 打开大悬浮窗，同时关闭小悬浮窗。
-     */
-    private void openBigWindow() {
-        MyWindowManager.createBigWindow(getContext());
-        MyWindowManager.removeSmallWindow(getContext());
     }
 
     /**

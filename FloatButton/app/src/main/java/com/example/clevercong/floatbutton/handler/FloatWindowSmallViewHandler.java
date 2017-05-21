@@ -1,12 +1,17 @@
 package com.example.clevercong.floatbutton.handler;
 
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 
+import com.example.clevercong.floatbutton.MyWindowManager;
 import com.example.clevercong.floatbutton.utils.LogUtils;
 
-import static com.example.clevercong.floatbutton.Contants.*;
+import static com.example.clevercong.floatbutton.Contants.DOUBLE_CLICK_TWICE_INTERVAL;
+import static com.example.clevercong.floatbutton.Contants.EVENT_CLICK;
+import static com.example.clevercong.floatbutton.Contants.EVENT_DOUBLE_CLICK;
+import static com.example.clevercong.floatbutton.Contants.EVENT_LONG_PRESS;
 
 /**
  * Created by clevercong on 2017/5/21.
@@ -15,9 +20,10 @@ import static com.example.clevercong.floatbutton.Contants.*;
 public class FloatWindowSmallViewHandler extends Handler {
     private static final String TAG = "FloatWindowSmallViewHandler";
     private long mLastDoubleClickTime;
+    private Context mContext;
 
-    public FloatWindowSmallViewHandler() {
-
+    public FloatWindowSmallViewHandler(Context context) {
+        this.mContext = context;
     }
 
     @Override
@@ -30,6 +36,7 @@ public class FloatWindowSmallViewHandler extends Handler {
                 handleDoubleClick();
                 break;
             case EVENT_LONG_PRESS:
+                openBigWindow();
                 break;
             default:
                 break;
@@ -43,6 +50,11 @@ public class FloatWindowSmallViewHandler extends Handler {
             return;
         }
         mLastDoubleClickTime = System.currentTimeMillis();
+    }
+
+    private void openBigWindow() {
+        MyWindowManager.createBigWindow(mContext);
+        MyWindowManager.removeSmallWindow(mContext);
     }
 
     private void logd(String s) {
