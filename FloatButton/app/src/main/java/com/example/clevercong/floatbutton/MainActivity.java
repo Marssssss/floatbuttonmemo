@@ -1,7 +1,9 @@
 package com.example.clevercong.floatbutton;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
@@ -47,9 +49,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startServiceAndStopItSelf() {
-        Intent intent = new Intent(MainActivity.this, FloatWindowService.class);
-        startService(intent);
-        finish();
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (!Settings.canDrawOverlays(getApplicationContext())) {
+                //启动Activity让用户授权
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+                startActivity(intent);
+                return;
+            } else {
+                Intent intent = new Intent(MainActivity.this, FloatWindowService.class);
+                startService(intent);
+                finish();
+            }
+        } else {
+            Intent intent = new Intent(MainActivity.this, FloatWindowService.class);
+            startService(intent);
+            finish();
+        }
     }
 
 }
