@@ -1,6 +1,7 @@
-package com.example.clevercong.floatbutton;
+package com.example.clevercong.floatbutton.view;
 
 import android.content.Context;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -8,13 +9,21 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.clevercong.floatbutton.MyWindowManager;
+import com.example.clevercong.floatbutton.R;
+import com.example.clevercong.floatbutton.handler.FloatWindowSmallViewHandler;
+import com.example.clevercong.floatbutton.utils.LogUtils;
+
 import java.lang.reflect.Field;
+
+import static com.example.clevercong.floatbutton.Contants.*;
 
 /**
  * Created by clevercong on 2017/5/18.
  */
 
 public class FloatWindowSmallView extends LinearLayout {
+    private static final String TAG = "FloatWindowSmallView";
 
     /**
      * 记录小悬浮窗的宽度
@@ -42,34 +51,31 @@ public class FloatWindowSmallView extends LinearLayout {
     private WindowManager.LayoutParams mParams;
 
     /**
-     * 记录当前手指位置在屏幕上的横坐标值
+     * 记录当前手指位置在屏幕上的横、纵坐标值
      */
     private float xInScreen;
-
-    /**
-     * 记录当前手指位置在屏幕上的纵坐标值
-     */
     private float yInScreen;
 
     /**
-     * 记录手指按下时在屏幕上的横坐标的值
+     * 记录手指按下时在屏幕上的横、纵坐标的值
      */
     private float xDownInScreen;
-
-    /**
-     * 记录手指按下时在屏幕上的纵坐标的值
-     */
     private float yDownInScreen;
 
     /**
-     * 记录手指按下时在小悬浮窗的View上的横坐标的值
+     * 记录手指按下时在小悬浮窗的View上的横、纵坐标的值
      */
     private float xInView;
+    private float yInView;
 
     /**
-     * 记录手指按下时在小悬浮窗的View上的纵坐标的值
+     * 记录上一次手指单击的时间，用来区分单击、双击
      */
-    private float yInView;
+    private long mLastClickTime;
+    /**
+     * 记录上一次手指长按得时间，用来区分单击、长按
+     */
+    private long mLastTouchTime;
 
     public FloatWindowSmallView(Context context) {
         super(context);
@@ -82,6 +88,8 @@ public class FloatWindowSmallView extends LinearLayout {
         percentView.setText(MyWindowManager.getUsedPercentValue(context));
     }
 
+    private FloatWindowSmallViewHandler mHandler = new FloatWindowSmallViewHandler();
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
@@ -93,6 +101,7 @@ public class FloatWindowSmallView extends LinearLayout {
                 yDownInScreen = event.getRawY() - getStatusBarHeight();
                 xInScreen = event.getRawX();
                 yInScreen = event.getRawY() - getStatusBarHeight();
+                mLastTouchTime = System.currentTimeMillis();
                 break;
             case MotionEvent.ACTION_MOVE:
                 xInScreen = event.getRawX();
@@ -103,7 +112,21 @@ public class FloatWindowSmallView extends LinearLayout {
             case MotionEvent.ACTION_UP:
                 // 如果手指离开屏幕时，xDownInScreen和xInScreen相等，且yDownInScreen和yInScreen相等，则视为触发了单击事件。
                 if (xDownInScreen == xInScreen && yDownInScreen == yInScreen) {
-                    openBigWindow();
+                    if (System.currentTimeMillis() - mLastClickTime < DOUBLE_CLICK_INTERVAL) {
+                        // 间隔小于500ms，添加双击事件，移除单击事件
+                        mHandler.removeMessages(EVENT_CLICK);
+                        Message dClickMsg = mHandler.obtainMessage(EVENT_DOUBLE_CLICK);
+                        mHandler.sendMessage(dClickMsg);
+                    } else if (System.currentTimeMillis() - mLastTouchTime < LONG_PRESS_INTERVAL) {
+                        // 间隔大于500ms，添加单击事件
+                        Message clickMsg = mHandler.obtainMessage(EVENT_CLICK);
+                        mHandler.sendMessageDelayed(clickMsg, DOUBLE_CLICK_INTERVAL);
+                    } else {
+                        // 其余，添加长按时间；注意：受第一条if语句空值，移动位置的长按不发送长按事件
+                        Message clickMsg = mHandler.obtainMessage(EVENT_LONG_PRESS);
+                        mHandler.sendMessage(clickMsg);
+                    }
+                    mLastClickTime = System.currentTimeMillis();
                 }
                 break;
             default:
@@ -157,6 +180,10 @@ public class FloatWindowSmallView extends LinearLayout {
             }
         }
         return statusBarHeight;
+    }
+
+    private void logd(String s) {
+        LogUtils.logd(TAG, s);
     }
 
 }

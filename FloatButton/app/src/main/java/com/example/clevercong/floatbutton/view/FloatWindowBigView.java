@@ -1,4 +1,4 @@
-package com.example.clevercong.floatbutton;
+package com.example.clevercong.floatbutton.view;
 
 import android.content.Context;
 import android.content.Intent;
@@ -6,6 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+
+import com.example.clevercong.floatbutton.FloatWindowService;
+import com.example.clevercong.floatbutton.MyWindowManager;
+import com.example.clevercong.floatbutton.R;
 
 /**
  * Created by clevercong on 2017/5/18.

@@ -8,6 +8,9 @@ import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import android.widget.TextView;
 
+import com.example.clevercong.floatbutton.view.FloatWindowBigView;
+import com.example.clevercong.floatbutton.view.FloatWindowSmallView;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
