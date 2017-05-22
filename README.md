@@ -15,3 +15,11 @@ http://www.cnblogs.com/fuck1/p/5513412.html
 
 004 add recorder function part one.
 see for help: http://blog.csdn.net/fan7983377/article/details/51750583
+
+005 add main page in big view; delete long press.
+
+git show ffecaace605267acd21a8cc81b5b83746897b0ce > 1.patch
+
+006 add xunfei sdk.
+
+see for help: http://doc.xfyun.cn/msc_android/299547

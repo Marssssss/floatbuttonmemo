@@ -7,4 +7,6 @@
     <string name="button_close">关闭悬浮窗</string>
     <string name="button_main">进入主界面</string>
     <string name="button_back">返回</string>
+
+    <string name="app_id">5922f4ca</string>
 </resources>
