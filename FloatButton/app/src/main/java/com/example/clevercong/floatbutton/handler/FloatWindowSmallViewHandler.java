@@ -36,7 +36,6 @@ public class FloatWindowSmallViewHandler extends Handler {
                 handleDoubleClick();
                 break;
             case EVENT_LONG_PRESS:
-                openBigWindow();
                 break;
             default:
                 break;
@@ -50,6 +49,7 @@ public class FloatWindowSmallViewHandler extends Handler {
             return;
         }
         mLastDoubleClickTime = System.currentTimeMillis();
+        openBigWindow();
     }
 
     private void openBigWindow() {

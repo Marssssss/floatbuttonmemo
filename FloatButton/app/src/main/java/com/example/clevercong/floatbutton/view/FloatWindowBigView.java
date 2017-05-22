@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.example.clevercong.floatbutton.FloatWindowService;
+import com.example.clevercong.floatbutton.MainActivity;
 import com.example.clevercong.floatbutton.MyWindowManager;
 import com.example.clevercong.floatbutton.R;
 
@@ -35,6 +36,7 @@ public class FloatWindowBigView extends LinearLayout {
         viewHeight = view.getLayoutParams().height;
         Button close = (Button) findViewById(R.id.close);
         Button back = (Button) findViewById(R.id.back);
+        Button main = (Button) findViewById(R.id.main);
         close.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -51,6 +53,17 @@ public class FloatWindowBigView extends LinearLayout {
                 // 点击返回的时候，移除大悬浮窗，创建小悬浮窗
                 MyWindowManager.removeBigWindow(context);
                 MyWindowManager.createSmallWindow(context);
+            }
+        });
+        main.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 点击进入主界面时，移除所有悬浮窗，进入主界面
+                MyWindowManager.removeBigWindow(context);
+                MyWindowManager.removeSmallWindow(context);
+                Intent intent = new Intent(getContext(), MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
             }
         });
     }

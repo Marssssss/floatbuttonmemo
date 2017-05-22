@@ -45,13 +45,15 @@ public class MainActivity extends AppCompatActivity {
         mTextMessage = (TextView) findViewById(R.id.message);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        // 一进来就默认选中第二个(HOME)
+        navigation.getMenu().getItem(1).setChecked(true);
 
     }
 
     private void startServiceAndStopItSelf() {
         if (Build.VERSION.SDK_INT >= 23) {
             if (!Settings.canDrawOverlays(getApplicationContext())) {
-                //启动Activity让用户授权
+                // 启动Activity让用户授权
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
                 startActivity(intent);
                 return;
