@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Message;
 
 import com.example.clevercong.floatbutton.MyWindowManager;
+import com.example.clevercong.floatbutton.asr.AsrApi;
 import com.example.clevercong.floatbutton.utils.LogUtils;
 
 import static com.example.clevercong.floatbutton.Contants.DOUBLE_CLICK_TWICE_INTERVAL;
@@ -21,9 +22,11 @@ public class FloatWindowSmallViewHandler extends Handler {
     private static final String TAG = "FloatWindowSmallViewHandler";
     private long mLastDoubleClickTime;
     private Context mContext;
+    private AsrApi mAsrApi;
 
     public FloatWindowSmallViewHandler(Context context) {
         this.mContext = context;
+        mAsrApi = AsrApi.getInstance(context);
     }
 
     @Override
@@ -31,6 +34,7 @@ public class FloatWindowSmallViewHandler extends Handler {
         logd("handleMessage: msg.what = " + msg.what);
         switch (msg.what) {
             case EVENT_CLICK:
+                handleClick();
                 break;
             case EVENT_DOUBLE_CLICK:
                 handleDoubleClick();
@@ -41,6 +45,15 @@ public class FloatWindowSmallViewHandler extends Handler {
                 break;
         }
         super.handleMessage(msg);
+    }
+
+    private void handleClick() {
+        AsrApi.State currentState = mAsrApi.getState();
+        if (currentState == AsrApi.State.IDLE) {
+            mAsrApi.startAsr();
+        } else if (currentState == AsrApi.State.RUNNING) {
+            mAsrApi.stopAsr();
+        }
     }
 
     private void handleDoubleClick() {
