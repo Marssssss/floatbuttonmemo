@@ -202,7 +202,7 @@ public class AsrApi {
         }
     };
 
-    interface ApiCallback {
+    public interface ApiCallback {
         public void onBeginOfSpeech();
         public void onError(SpeechError error);
         public void onEndOfSpeech();

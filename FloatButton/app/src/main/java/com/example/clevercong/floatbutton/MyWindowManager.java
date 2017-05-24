@@ -9,6 +9,7 @@ import android.view.WindowManager.LayoutParams;
 import android.widget.TextView;
 
 import com.example.clevercong.floatbutton.view.FloatWindowBigView;
+import com.example.clevercong.floatbutton.view.FloatWindowRecordView;
 import com.example.clevercong.floatbutton.view.FloatWindowSmallView;
 
 import java.io.BufferedReader;
@@ -31,6 +32,10 @@ public class MyWindowManager {
      * 大悬浮窗View的实例
      */
     private static FloatWindowBigView bigWindow;
+
+    private static FloatWindowRecordView recordView;
+
+    private static WindowManager.LayoutParams recordWindowParams;
 
     /**
      * 小悬浮窗View的参数
@@ -90,6 +95,25 @@ public class MyWindowManager {
             WindowManager windowManager = getWindowManager(context);
             windowManager.removeView(smallWindow);
             smallWindow = null;
+        }
+    }
+
+    public static void createRecordView(Context context) {
+        recordWindowParams.type = LayoutParams.TYPE_PHONE;
+        recordWindowParams.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL
+                | LayoutParams.FLAG_NOT_FOCUSABLE;
+        recordWindowParams.gravity = Gravity.LEFT | Gravity.TOP;
+
+        recordView = new FloatWindowRecordView(context);
+
+        getWindowManager(context).addView(recordView, recordWindowParams);
+    }
+
+    public static void removeRecordView(Context context) {
+        if (recordView != null) {
+            WindowManager windowManager = getWindowManager(context);
+            windowManager.removeView(recordView);
+            recordView = null;
         }
     }
 

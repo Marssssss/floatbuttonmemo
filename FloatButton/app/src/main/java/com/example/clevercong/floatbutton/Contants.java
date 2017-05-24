@@ -9,6 +9,8 @@ public class Contants {
     public static final long DOUBLE_CLICK_TWICE_INTERVAL = 1000; // 1s
     public static final long LONG_PRESS_INTERVAL = 500; // 500ms
 
+    public static final long MAX_RECORD_TIME = 60*60 + 60;
+
     // EVENT
     private static final int EVENT_BASE = 1000;
     public static final int EVENT_CLICK = EVENT_BASE + 1;
